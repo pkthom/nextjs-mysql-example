@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  nextjs:
+    build: ./next-app
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=example
+      - DB_NAME=testdb
+    depends_on:
+      - mysql
+    networks:
+      - mynet
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: testdb
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "3306:3306"
+    networks:
+      - mynet
+
+volumes:
+  db-data:
+
+networks:
+  mynet:
